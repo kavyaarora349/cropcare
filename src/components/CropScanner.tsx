@@ -136,9 +136,9 @@ const CropScanner = () => {
                     </Button>
                   </div>
                 ) : (
-                  <div className="p-12 md:p-16 text-center">
-                    <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-muted flex items-center justify-center">
-                      <Upload className="w-10 h-10 text-muted-foreground" />
+                  <div className="p-12 md:p-16 text-center group">
+                    <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors duration-300">
+                      <Upload className="w-10 h-10 text-muted-foreground group-hover:text-primary transition-colors duration-300 group-hover:animate-bounce" />
                     </div>
                     <h3 className="font-display font-semibold text-lg text-foreground mb-2">
                       Drop your image here
@@ -153,7 +153,7 @@ const CropScanner = () => {
                         className="hidden"
                         onChange={handleFileSelect}
                       />
-                      <Button variant="outline" className="cursor-pointer" asChild>
+                      <Button variant="outline" className="cursor-pointer press-effect hover-glow" asChild>
                         <span>
                           <Camera className="w-4 h-4 mr-2" />
                           Choose Image
@@ -166,17 +166,18 @@ const CropScanner = () => {
 
               {/* Analyze Button */}
               {image && (
-                <div className="flex justify-center animate-scale-in">
+                <div className="flex justify-center animate-bounce-in">
                   <Button
                     variant="hero"
                     size="xl"
                     onClick={analyzeImage}
                     disabled={isAnalyzing}
+                    className="press-effect"
                   >
                     {isAnalyzing ? (
                       <>
                         <Loader2 className="w-5 h-5 animate-spin" />
-                        Analyzing...
+                        <span className="shimmer bg-clip-text">Analyzing...</span>
                       </>
                     ) : (
                       <>
@@ -189,33 +190,34 @@ const CropScanner = () => {
               )}
             </div>
           ) : (
-            <div className="space-y-6 animate-fade-in">
+            <div className="space-y-6">
               {/* Result Header */}
-              <Card className="p-6 shadow-card">
+              <Card className="p-6 shadow-card animate-scale-in-center overflow-hidden">
                 <div className="flex items-start gap-4">
                   <img
                     src={image!}
                     alt="Analyzed crop"
-                    className="w-24 h-24 rounded-xl object-cover"
+                    className="w-24 h-24 rounded-xl object-cover ring-2 ring-primary/20"
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-display font-bold text-2xl text-foreground">
+                      <h3 className="font-display font-bold text-2xl text-foreground animate-fade-in-up">
                         {result.disease}
                       </h3>
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium border ${getSeverityColor(
+                        className={`px-3 py-1 rounded-full text-xs font-medium border animate-bounce-in ${getSeverityColor(
                           result.severity
                         )}`}
+                        style={{ animationDelay: "0.2s" }}
                       >
                         {result.severity.toUpperCase()} SEVERITY
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: "0.3s" }}>
                       <CheckCircle className="w-4 h-4 text-success" />
                       {result.confidence}% confidence
                     </div>
-                    <p className="mt-3 text-muted-foreground text-sm leading-relaxed">
+                    <p className="mt-3 text-muted-foreground text-sm leading-relaxed animate-fade-in" style={{ animationDelay: "0.4s" }}>
                       {result.description}
                     </p>
                   </div>
@@ -223,21 +225,20 @@ const CropScanner = () => {
               </Card>
 
               {/* Suggestions */}
-              <Card className="p-6 shadow-card">
+              <Card className="p-6 shadow-card animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
                 <div className="flex items-center gap-2 mb-4">
-                  <AlertTriangle className="w-5 h-5 text-warning" />
+                  <AlertTriangle className="w-5 h-5 text-warning animate-wiggle" />
                   <h4 className="font-display font-semibold text-lg text-foreground">
                     Treatment Suggestions
                   </h4>
                 </div>
-                <ul className="space-y-3">
+                <ul className="space-y-3 stagger-children">
                   {result.suggestions.map((suggestion, index) => (
                     <li
                       key={index}
-                      className="flex items-start gap-3 text-muted-foreground animate-slide-in"
-                      style={{ animationDelay: `${index * 0.05}s` }}
+                      className="flex items-start gap-3 text-muted-foreground group hover:text-foreground transition-colors cursor-default"
                     >
-                      <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-medium flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-medium flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                         {index + 1}
                       </span>
                       {suggestion}
@@ -247,7 +248,7 @@ const CropScanner = () => {
               </Card>
 
               {/* Recommended Products */}
-              <Card className="p-6 shadow-card">
+              <Card className="p-6 shadow-card animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
                 <h4 className="font-display font-semibold text-lg text-foreground mb-4">
                   Recommended Products
                 </h4>
@@ -255,8 +256,8 @@ const CropScanner = () => {
                   {result.products.map((product, index) => (
                     <div
                       key={index}
-                      className="p-4 rounded-xl bg-muted/50 border border-border hover:border-primary/30 transition-colors animate-scale-in"
-                      style={{ animationDelay: `${index * 0.1}s` }}
+                      className="p-4 rounded-xl bg-muted/50 border border-border hover:border-primary/30 hover-lift hover-glow transition-all cursor-pointer animate-scale-in"
+                      style={{ animationDelay: `${0.5 + index * 0.1}s` }}
                     >
                       <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full">
                         {product.type}
@@ -264,10 +265,10 @@ const CropScanner = () => {
                       <h5 className="font-semibold text-foreground mt-2">
                         {product.name}
                       </h5>
-                      <p className="text-lg font-bold text-primary mt-1">
+                      <p className="text-lg font-bold text-gradient mt-1">
                         {product.price}
                       </p>
-                      <Button variant="outline" size="sm" className="w-full mt-3">
+                      <Button variant="outline" size="sm" className="w-full mt-3 press-effect">
                         View Details
                       </Button>
                     </div>
@@ -276,8 +277,8 @@ const CropScanner = () => {
               </Card>
 
               {/* Scan Another */}
-              <div className="flex justify-center">
-                <Button variant="outline" size="lg" onClick={resetScanner}>
+              <div className="flex justify-center animate-fade-in" style={{ animationDelay: "0.6s" }}>
+                <Button variant="outline" size="lg" onClick={resetScanner} className="press-effect hover-glow">
                   Scan Another Crop
                 </Button>
               </div>

@@ -18,30 +18,31 @@ const Navbar = ({ activeTab, onTabChange }: NavbarProps) => {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 glass-card border-b">
+    <nav className="sticky top-0 z-50 glass-card border-b animate-fade-in-down">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <button 
             onClick={() => onTabChange("home")}
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            className="flex items-center gap-2 group"
           >
-            <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center shadow-md">
+            <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
               <Leaf className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="font-display font-bold text-xl text-foreground">CropGuard</span>
+            <span className="font-display font-bold text-xl text-foreground group-hover:text-primary transition-colors">CropGuard</span>
           </button>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-2">
-            {navItems.map((item) => (
+            {navItems.map((item, index) => (
               <Button
                 key={item.id}
                 variant={activeTab === item.id ? "default" : "ghost"}
                 onClick={() => onTabChange(item.id)}
-                className="gap-2"
+                className="gap-2 press-effect animate-fade-in"
+                style={{ animationDelay: `${index * 100}ms` }}
               >
-                <item.icon className="w-4 h-4" />
+                <item.icon className={`w-4 h-4 ${activeTab === item.id ? "" : "group-hover:rotate-12"} transition-transform`} />
                 {item.label}
               </Button>
             ))}

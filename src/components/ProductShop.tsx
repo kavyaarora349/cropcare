@@ -168,23 +168,23 @@ const ProductShop = () => {
         </div>
 
         {/* Products Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto stagger-children">
           {filteredProducts.map((product, index) => (
             <Card
               key={product.id}
-              className="overflow-hidden shadow-card hover:shadow-lg transition-all duration-300 hover:-translate-y-1 animate-fade-in group"
-              style={{ animationDelay: `${index * 0.05}s` }}
+              className="overflow-hidden shadow-card hover-lift hover-glow transition-all cursor-pointer group"
             >
               {/* Product Image Placeholder */}
-              <div className="relative h-48 bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
-                <div className="w-20 h-20 rounded-2xl gradient-primary flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+              <div className="relative h-48 bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center overflow-hidden">
+                <div className="w-20 h-20 rounded-2xl gradient-primary flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
                   <product.icon className="w-10 h-10 text-primary-foreground" />
                 </div>
                 {product.badge && (
-                  <Badge className="absolute top-3 left-3 bg-accent text-accent-foreground">
+                  <Badge className="absolute top-3 left-3 bg-accent text-accent-foreground animate-bounce-in">
                     {product.badge}
                   </Badge>
                 )}
+                <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
 
               {/* Product Info */}
@@ -218,7 +218,7 @@ const ProductShop = () => {
                 {/* Price and CTA */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-xl font-bold text-primary">
+                    <span className="text-xl font-bold text-gradient">
                       ${product.price.toFixed(2)}
                     </span>
                     {product.originalPrice && (
@@ -227,8 +227,8 @@ const ProductShop = () => {
                       </span>
                     )}
                   </div>
-                  <Button variant="default" size="sm">
-                    <ShoppingCart className="w-4 h-4 mr-1" />
+                  <Button variant="default" size="sm" className="press-effect">
+                    <ShoppingCart className="w-4 h-4 mr-1 group-hover:animate-wiggle" />
                     Add
                   </Button>
                 </div>

@@ -183,12 +183,11 @@ const CommunityFeed = () => {
           </Card>
 
           {/* Feed */}
-          <div className="space-y-4">
+          <div className="space-y-4 stagger-children">
             {posts.map((post, index) => (
               <Card
                 key={post.id}
-                className="p-4 shadow-card hover:shadow-lg transition-shadow animate-fade-in"
-                style={{ animationDelay: `${index * 0.05}s` }}
+                className="p-4 shadow-card hover:shadow-lg hover-lift transition-all group"
               >
                 {/* Author Info */}
                 <div className="flex items-start gap-3 mb-3">
@@ -220,10 +219,11 @@ const CommunityFeed = () => {
                 {/* Tags */}
                 {post.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-3">
-                    {post.tags.map((tag) => (
+                    {post.tags.map((tag, tagIndex) => (
                       <span
                         key={tag}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full"
+                        className="inline-flex items-center gap-1 text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full hover:bg-primary hover:text-primary-foreground transition-colors cursor-pointer"
+                        style={{ animationDelay: `${tagIndex * 50}ms` }}
                       >
                         <Leaf className="w-3 h-3" />
                         {tag}
@@ -237,30 +237,32 @@ const CommunityFeed = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={`gap-2 ${
-                      post.isLiked ? "text-destructive" : "text-muted-foreground"
+                    className={`gap-2 press-effect group ${
+                      post.isLiked ? "text-destructive" : "text-muted-foreground hover:text-destructive"
                     }`}
                     onClick={() => handleLike(post.id)}
                   >
                     <Heart
-                      className={`w-4 h-4 ${post.isLiked ? "fill-current" : ""}`}
+                      className={`w-4 h-4 transition-transform group-hover:scale-125 ${
+                        post.isLiked ? "fill-current animate-heartbeat" : ""
+                      }`}
                     />
                     {post.likes}
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="gap-2 text-muted-foreground"
+                    className="gap-2 text-muted-foreground press-effect hover:text-primary"
                   >
-                    <MessageCircle className="w-4 h-4" />
+                    <MessageCircle className="w-4 h-4 transition-transform hover:scale-110" />
                     {post.comments}
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="gap-2 text-muted-foreground"
+                    className="gap-2 text-muted-foreground press-effect hover:text-primary"
                   >
-                    <Share2 className="w-4 h-4" />
+                    <Share2 className="w-4 h-4 transition-transform hover:rotate-12" />
                     Share
                   </Button>
                 </div>
