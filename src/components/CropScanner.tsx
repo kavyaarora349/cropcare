@@ -1,7 +1,9 @@
 import { useState, useCallback } from "react";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Upload, Camera, Loader2, AlertTriangle, CheckCircle, Leaf, X } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Upload, Camera, Loader2, AlertTriangle, CheckCircle, Leaf, X, AlertCircle } from "lucide-react";
 
 interface AnalysisResult {
   disease: string;
@@ -9,7 +11,7 @@ interface AnalysisResult {
   severity: "low" | "medium" | "high";
   description: string;
   suggestions: string[];
-  products: { name: string; type: string; price: string }[];
+  products: { name: string; type: string; price: string; image?: string; purchase_url?: string }[];
 }
 
 const CropScanner = () => {
@@ -17,25 +19,9 @@ const CropScanner = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [cropType, setCropType] = useState<string | undefined>(undefined);
 
-  const mockAnalysis: AnalysisResult = {
-    disease: "Leaf Blight",
-    confidence: 94,
-    severity: "medium",
-    description: "Leaf blight is a common fungal disease that causes brown spots and wilting on leaves. It spreads rapidly in humid conditions and can significantly reduce crop yield if left untreated.",
-    suggestions: [
-      "Remove and destroy infected leaves immediately",
-      "Apply fungicide within 24-48 hours",
-      "Improve air circulation around plants",
-      "Avoid overhead watering to reduce humidity",
-      "Monitor surrounding plants for early signs",
-    ],
-    products: [
-      { name: "FungiShield Pro", type: "Fungicide", price: "$24.99" },
-      { name: "CropGuard Spray", type: "Preventive", price: "$18.50" },
-      { name: "LeafCare Plus", type: "Treatment", price: "$32.00" },
-    ],
-  };
+  const [error, setError] = useState<string | null>(null);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -57,17 +43,55 @@ const CropScanner = () => {
     }
   };
 
+  const dataUrlToBlob = (dataUrl: string): Blob => {
+    const [header, base64] = dataUrl.split(",");
+    const mime = header.match(/:(.*?);/)?.[1] ?? "image/jpeg";
+    const bin = atob(base64);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    return new Blob([arr], { type: mime });
+  };
+
   const analyzeImage = async () => {
+    if (!image) return;
     setIsAnalyzing(true);
-    // Simulate AI analysis
-    await new Promise((resolve) => setTimeout(resolve, 2500));
-    setResult(mockAnalysis);
-    setIsAnalyzing(false);
+    setError(null);
+    try {
+      const formData = new FormData();
+      formData.append("file", dataUrlToBlob(image), "leaf.jpg");
+      const url = cropType ? `/api/analyze?crop_type=${encodeURIComponent(cropType)}` : "/api/analyze";
+      const apiRes = await fetch(url, {
+        method: "POST",
+        body: formData,
+      });
+      if (!apiRes.ok) {
+        const msg = await apiRes.json().catch(() => ({ detail: apiRes.statusText }));
+        throw new Error(msg.detail || `Request failed: ${apiRes.status}`);
+      }
+      const data = await apiRes.json();
+      setResult({
+        disease: data.disease,
+        confidence: data.confidence,
+        severity: data.severity,
+        description: data.description,
+        suggestions: data.suggestions,
+        products: data.products,
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Analysis failed. Please try again.");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleProductClick = (purchaseUrl: string) => {
+    window.open(purchaseUrl, '_blank', 'noopener,noreferrer');
   };
 
   const resetScanner = () => {
     setImage(null);
     setResult(null);
+    setError(null);
   };
 
   const getSeverityColor = (severity: string) => {
@@ -103,15 +127,39 @@ const CropScanner = () => {
 
           {!result ? (
             <div className="space-y-6 animate-fade-in">
+              {/* Crop Type Selection */}
+              <Card className="p-6 shadow-card animate-fade-in-up">
+                <div className="flex items-center gap-2 mb-4">
+                  <Leaf className="w-5 h-5 text-primary" />
+                  <h3 className="font-display font-semibold text-lg text-foreground">
+                    Select Crop Type (Optional)
+                  </h3>
+                </div>
+                <p className="text-muted-foreground text-sm mb-4">
+                  Choose the crop type to get more accurate disease predictions by filtering results to relevant diseases only.
+                </p>
+                <Select value={cropType} onValueChange={setCropType}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select crop type (leave empty for all)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Apple">Apple</SelectItem>
+                    <SelectItem value="Corn">Corn (Maize)</SelectItem>
+                    <SelectItem value="Grape">Grape</SelectItem>
+                    <SelectItem value="Cherry">Cherry</SelectItem>
+                    <SelectItem value="Blueberry">Blueberry</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Card>
+
               {/* Upload Area */}
               <Card
-                className={`relative border-2 border-dashed transition-all duration-300 ${
-                  isDragging
-                    ? "border-primary bg-primary/5"
-                    : image
+                className={`relative border-2 border-dashed transition-all duration-300 ${isDragging
+                  ? "border-primary bg-primary/5"
+                  : image
                     ? "border-success bg-success/5"
                     : "border-border hover:border-primary/50"
-                }`}
+                  }`}
                 onDragOver={(e) => {
                   e.preventDefault();
                   setIsDragging(true);
@@ -146,23 +194,27 @@ const CropScanner = () => {
                     <p className="text-muted-foreground mb-6">
                       or click to browse from your device
                     </p>
-                    <label>
+                    <label className={cn(buttonVariants({ variant: "outline" }), "cursor-pointer press-effect hover-glow flex items-center gap-2")}>
                       <input
                         type="file"
                         accept="image/*"
                         className="hidden"
                         onChange={handleFileSelect}
                       />
-                      <Button variant="outline" className="cursor-pointer press-effect hover-glow" asChild>
-                        <span>
-                          <Camera className="w-4 h-4 mr-2" />
-                          Choose Image
-                        </span>
-                      </Button>
+                      <Camera className="w-4 h-4" />
+                      Choose Image
                     </label>
                   </div>
                 )}
               </Card>
+
+              {/* Error */}
+              {error && (
+                <div className="flex items-center gap-2 p-4 rounded-lg bg-destructive/10 text-destructive border border-destructive/20 animate-fade-in">
+                  <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                  <p className="text-sm">{error}</p>
+                </div>
+              )}
 
               {/* Analyze Button */}
               {image && (
@@ -256,21 +308,42 @@ const CropScanner = () => {
                   {result.products.map((product, index) => (
                     <div
                       key={index}
-                      className="p-4 rounded-xl bg-muted/50 border border-border hover:border-primary/30 hover-lift hover-glow transition-all cursor-pointer animate-scale-in"
+                      className="rounded-xl bg-muted/50 border border-border hover:border-primary/30 hover-lift hover-glow transition-all cursor-pointer animate-scale-in overflow-hidden"
                       style={{ animationDelay: `${0.5 + index * 0.1}s` }}
+                      onClick={() => product.purchase_url && handleProductClick(product.purchase_url)}
                     >
-                      <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full">
-                        {product.type}
-                      </span>
-                      <h5 className="font-semibold text-foreground mt-2">
-                        {product.name}
-                      </h5>
-                      <p className="text-lg font-bold text-gradient mt-1">
-                        {product.price}
-                      </p>
-                      <Button variant="outline" size="sm" className="w-full mt-3 press-effect">
-                        View Details
-                      </Button>
+                      {/* Product Image */}
+                      {product.image && (
+                        <div className="relative h-32 bg-gradient-to-br from-muted to-muted/50 overflow-hidden">
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="w-full h-full object-contain p-2"
+                            onError={(e) => {
+                              e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMCAzMkM0NCAzMiA0NCAzMIDIwIDMyWiIgZmlsbD0iI0Q5RDlEOSIvPgo8cGF0aCBkPSJNMjAgMzJMNCA0OEw0IDMyTDIwIDE2WiIgZmlsbD0iI0JGQkZGRiIvPgo8L3N2Zz4K';
+                            }}
+                          />
+                          {product.purchase_url && (
+                            <div className="absolute top-2 right-2 bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                              Click to Buy
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      <div className="p-4">
+                        <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full">
+                          {product.type}
+                        </span>
+                        <h5 className="font-semibold text-foreground mt-2">
+                          {product.name}
+                        </h5>
+                        <p className="text-lg font-bold text-gradient mt-1">
+                          {product.price}
+                        </p>
+                        <Button variant="outline" size="sm" className="w-full mt-3 press-effect">
+                          {product.purchase_url ? "Buy Now" : "View Details"}
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>

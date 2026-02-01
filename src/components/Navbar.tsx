@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Leaf, Menu, X, Scan, Users, ShoppingBag } from "lucide-react";
+import { Menu, X, Scan, Users, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Logo from "./Logo";
+import { ThemeToggle } from "./ThemeToggle";
+import WeatherWidget from "./WeatherWidget";
 
 interface NavbarProps {
   activeTab: string;
@@ -22,18 +25,21 @@ const Navbar = ({ activeTab, onTabChange }: NavbarProps) => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <button 
+          <button
             onClick={() => onTabChange("home")}
-            className="flex items-center gap-2 group"
+            className="group"
           >
-            <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-              <Leaf className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="font-display font-bold text-xl text-foreground group-hover:text-primary transition-colors">CropGuard</span>
+            <Logo className="group-hover:scale-105 transition-transform duration-300" />
           </button>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-2">
+
+            {/* Weather Widget */}
+            <div className="mr-2">
+              <WeatherWidget />
+            </div>
+
             {navItems.map((item, index) => (
               <Button
                 key={item.id}
@@ -46,6 +52,9 @@ const Navbar = ({ activeTab, onTabChange }: NavbarProps) => {
                 {item.label}
               </Button>
             ))}
+            <div className="ml-2 pl-2 border-l border-border">
+              <ThemeToggle />
+            </div>
           </div>
 
           {/* Mobile Menu Button */}

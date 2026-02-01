@@ -26,11 +26,16 @@ interface Product {
   image: string;
   badge?: string;
   icon: typeof Leaf;
+  purchaseUrl?: string;
 }
 
 const ProductShop = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+
+  const handleProductClick = (purchaseUrl: string) => {
+    window.open(purchaseUrl, '_blank', 'noopener,noreferrer');
+  };
 
   const categories = [
     { id: "all", label: "All Products", icon: ShoppingCart },
@@ -43,74 +48,80 @@ const ProductShop = () => {
   const products: Product[] = [
     {
       id: 1,
-      name: "FungiShield Pro",
+      name: "Bayer Nativo 75 WG",
       category: "fungicide",
       description: "Broad-spectrum fungicide for effective control of leaf blight, powdery mildew, and rust diseases.",
-      price: 24.99,
-      originalPrice: 32.99,
+      price: 850,
+      originalPrice: 950,
       rating: 4.8,
       reviews: 342,
-      image: "",
+      image: "https://images.unsplash.com/photo-1595246140625-573b715d11dc?w=400&h=300&fit=crop",
       badge: "Best Seller",
       icon: Shield,
+      purchaseUrl: "https://www.amazon.in/s?k=bayer+nativo+75+wg+fungicide&ref=nb_sb_noss_2",
     },
     {
       id: 2,
-      name: "CropGuard Spray",
+      name: "Tata Rallis Manik",
       category: "pesticide",
       description: "Natural pest control spray safe for organic farming. Controls aphids, whiteflies, and mites.",
-      price: 18.50,
+      price: 380,
       rating: 4.6,
       reviews: 256,
-      image: "",
+      image: "https://images.unsplash.com/photo-1615486511484-92e004640864?w=400&h=300&fit=crop",
       icon: Bug,
+      purchaseUrl: "https://www.amazon.in/s?k=tata+rallis+manik+insecticide&ref=nb_sb_noss_2",
     },
     {
       id: 3,
-      name: "GrowMax Fertilizer",
+      name: "Iffco Nano Urea",
       category: "fertilizer",
       description: "Balanced NPK fertilizer with micronutrients for healthy plant growth and higher yields.",
-      price: 45.00,
+      price: 240,
       rating: 4.9,
       reviews: 521,
-      image: "",
+      image: "https://images.unsplash.com/photo-1605000797499-95a51c5269ae?w=400&h=300&fit=crop",
       badge: "Organic",
       icon: Leaf,
+      purchaseUrl: "https://www.amazon.in/s?k=iffco+nano+urea&ref=nb_sb_noss_2",
     },
     {
       id: 4,
-      name: "LeafCare Plus",
+      name: "Syngenta Amistar Top",
       category: "fungicide",
       description: "Systemic fungicide that provides protection from inside the plant. Long-lasting formula.",
-      price: 32.00,
+      price: 1200,
       rating: 4.7,
       reviews: 189,
-      image: "",
+      image: "https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?w=400&h=300&fit=crop",
       icon: Shield,
+      purchaseUrl: "https://www.amazon.in/s?k=syngenta+amistar+top+fungicide&ref=nb_sb_noss_2",
     },
     {
       id: 5,
-      name: "BioDefender",
+      name: "Bayer Confidor",
       category: "pesticide",
       description: "Biological pest control using beneficial microorganisms. Safe for bees and beneficial insects.",
-      price: 28.75,
-      originalPrice: 35.00,
+      price: 450,
+      originalPrice: 520,
       rating: 4.5,
       reviews: 167,
-      image: "",
+      image: "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=400&h=300&fit=crop",
       badge: "Eco-Friendly",
       icon: Bug,
+      purchaseUrl: "https://www.amazon.in/s?k=bayer+confidor+insecticide&ref=nb_sb_noss_2",
     },
     {
       id: 6,
-      name: "Smart Sprayer Kit",
+      name: "KisanKraft Battery Sprayer",
       category: "equipment",
-      description: "Battery-powered backpack sprayer with adjustable nozzle and 5L capacity.",
-      price: 89.99,
+      description: "Battery-powered backpack sprayer with adjustable nozzle and 16L capacity.",
+      price: 3500,
       rating: 4.8,
       reviews: 423,
-      image: "",
+      image: "https://images.unsplash.com/photo-1574943320219-553eb213da96?w=400&h=300&fit=crop",
       icon: Droplets,
+      purchaseUrl: "https://www.amazon.in/s?k=kisankraft+battery+sprayer&ref=nb_sb_noss_2",
     },
   ];
 
@@ -173,16 +184,37 @@ const ProductShop = () => {
             <Card
               key={product.id}
               className="overflow-hidden shadow-card hover-lift hover-glow transition-all cursor-pointer group"
+              onClick={() => product.purchaseUrl && handleProductClick(product.purchaseUrl)}
             >
-              {/* Product Image Placeholder */}
-              <div className="relative h-48 bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center overflow-hidden">
-                <div className="w-20 h-20 rounded-2xl gradient-primary flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-                  <product.icon className="w-10 h-10 text-primary-foreground" />
+              {/* Product Image */}
+              <div className="relative h-48 bg-gradient-to-br from-muted to-muted/50 overflow-hidden">
+                {product.image ? (
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover p-0 group-hover:scale-110 transition-all duration-300"
+                    onError={(e) => {
+                      // Fallback to icon if image fails to load
+                      e.currentTarget.style.display = 'none';
+                      const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                      if (fallback) fallback.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                <div className="absolute inset-0 items-center justify-center hidden">
+                  <div className="w-20 h-20 rounded-2xl gradient-primary flex items-center justify-center shadow-lg">
+                    <product.icon className="w-10 h-10 text-primary-foreground" />
+                  </div>
                 </div>
                 {product.badge && (
                   <Badge className="absolute top-3 left-3 bg-accent text-accent-foreground animate-bounce-in">
                     {product.badge}
                   </Badge>
+                )}
+                {product.purchaseUrl && (
+                  <div className="absolute top-3 right-3 bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                    Click to Buy
+                  </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
@@ -219,17 +251,17 @@ const ProductShop = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-baseline gap-2">
                     <span className="text-xl font-bold text-gradient">
-                      ${product.price.toFixed(2)}
+                      ₹{product.price}
                     </span>
                     {product.originalPrice && (
                       <span className="text-sm text-muted-foreground line-through">
-                        ${product.originalPrice.toFixed(2)}
+                        ₹{product.originalPrice}
                       </span>
                     )}
                   </div>
                   <Button variant="default" size="sm" className="press-effect">
                     <ShoppingCart className="w-4 h-4 mr-1 group-hover:animate-wiggle" />
-                    Add
+                    {product.purchaseUrl ? "Buy Now" : "Add"}
                   </Button>
                 </div>
               </div>

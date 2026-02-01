@@ -3,9 +3,10 @@ import { Scan, Users, ShoppingBag, ArrowRight, Leaf } from "lucide-react";
 
 interface HeroSectionProps {
   onGetStarted: () => void;
+  onJoinCommunity: () => void;
 }
 
-const HeroSection = ({ onGetStarted }: HeroSectionProps) => {
+const HeroSection = ({ onGetStarted, onJoinCommunity }: HeroSectionProps) => {
   const features = [
     {
       icon: Scan,
@@ -66,7 +67,7 @@ const HeroSection = ({ onGetStarted }: HeroSectionProps) => {
 
           {/* Subheading */}
           <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
-            Detect crop diseases instantly using AI, connect with farmers worldwide, 
+            Detect crop diseases instantly using AI, connect with farmers worldwide,
             and get expert product recommendations to keep your harvest healthy.
           </p>
 
@@ -76,7 +77,7 @@ const HeroSection = ({ onGetStarted }: HeroSectionProps) => {
               Scan Your Crop
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </Button>
-            <Button variant="outline" size="xl" onClick={() => {}} className="press-effect hover-glow">
+            <Button variant="outline" size="xl" onClick={onJoinCommunity} className="press-effect hover-glow">
               Join Community
             </Button>
           </div>
