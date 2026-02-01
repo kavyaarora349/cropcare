@@ -2,6 +2,10 @@
 Backend API for leaf disease analysis. Run: uvicorn main:app --reload --port 8000
 """
 import io
+import os
+# Force CPU usage to save memory on Render Free Tier
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
