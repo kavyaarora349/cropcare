@@ -20,7 +20,7 @@ const CropScanner = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [cropType, setCropType] = useState<string | undefined>(undefined);
+  const [cropType, setCropType] = useState<string>("");
 
   const [error, setError] = useState<string | null>(null);
 
