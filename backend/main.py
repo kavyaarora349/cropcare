@@ -11,8 +11,8 @@ from pydantic import BaseModel
 from PIL import Image
 import os
 import google.generativeai as genai
-from model_loader import predict, load_model_and_classes
-from disease_info import format_label, get_severity, get_description, get_suggestions, get_recommended_products
+from .model_loader import predict, load_model_and_classes
+from .disease_info import format_label, get_severity, get_description, get_suggestions, get_recommended_products
 
 
 

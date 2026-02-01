@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { MessageCircle, X, Send, Leaf, User, Bot, Loader2, Maximize2, Minimize2, Volume2, VolumeX } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { API_BASE_URL } from "../config";
 
 interface Message {
     role: "user" | "bot";
@@ -107,7 +108,7 @@ const LeafBot = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch("/api/chat", {
+            const response = await fetch(`${API_BASE_URL}/api/chat`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ message: userMessage, language }),

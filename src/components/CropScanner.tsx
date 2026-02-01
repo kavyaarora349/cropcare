@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
+import { API_BASE_URL } from "../config";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -59,7 +60,7 @@ const CropScanner = () => {
     try {
       const formData = new FormData();
       formData.append("file", dataUrlToBlob(image), "leaf.jpg");
-      const url = cropType ? `/api/analyze?crop_type=${encodeURIComponent(cropType)}` : "/api/analyze";
+      const url = cropType ? `${API_BASE_URL}/api/analyze?crop_type=${encodeURIComponent(cropType)}` : `${API_BASE_URL}/api/analyze`;
       const apiRes = await fetch(url, {
         method: "POST",
         body: formData,
