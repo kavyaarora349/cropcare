@@ -52,6 +52,11 @@ app.add_middleware(
 )
 
 
+
+@app.get("/")
+def root():
+    return {"message": "Crop Care Connect API", "status": "running", "docs": "/docs"}
+
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
