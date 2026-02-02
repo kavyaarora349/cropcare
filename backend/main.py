@@ -21,10 +21,12 @@ from .disease_info import format_label, get_severity, get_description, get_sugge
 
 
 # Configure Gemini
-# NOTE: In production, use environment variables. Hardcoded for demo/local use.
-GEMINI_API_KEY = "AIzaSyB3a8ZVqmIftYefKyiM-vXWBUquJN1EuQE"
+# Read API key from environment variable for production security
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
+else:
+    print("WARNING: GEMINI_API_KEY not set. Leaf Bot will return fallback responses.")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

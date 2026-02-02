@@ -71,3 +71,39 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Backend Deployment (Required for Crop Analysis & Leaf Bot)
+
+The crop analysis and Leaf Bot features require the backend API to be deployed. Follow these steps:
+
+### 1. Deploy Backend to Render
+
+1. Push your code to GitHub (if not already done)
+2. Go to [Render Dashboard](https://dashboard.render.com/)
+3. Click "New +" → "Web Service"
+4. Connect your GitHub repository
+5. Render will auto-detect `render.yaml` configuration
+6. Set the **GEMINI_API_KEY** environment variable:
+   - Go to Environment tab
+   - Add: `GEMINI_API_KEY` = `AIzaSyB3a8ZVqmIftYefKyiM-vXWBUquJN1EuQE`
+7. Click "Create Web Service"
+8. Wait for deployment to complete (~5-10 minutes)
+9. Copy your backend URL (e.g., `https://cropcare-backend.onrender.com`)
+
+### 2. Configure Frontend
+
+Update the frontend to use your deployed backend:
+
+1. In your frontend deployment platform (Lovable/Vercel/etc.), set environment variable:
+   - `VITE_API_BASE_URL` = `https://your-backend-url.onrender.com`
+2. Rebuild and redeploy the frontend
+
+### 3. Test
+
+- Open your deployed frontend
+- Try the **Scan Your Crop** feature (upload an image)
+- Try the **Leaf Bot** (click the chat icon)
+- Both should now work!
+
+**Note**: Render free tier spins down after 15 minutes of inactivity. First request may take 30-60 seconds.
+
